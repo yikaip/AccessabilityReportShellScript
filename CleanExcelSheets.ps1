@@ -9,12 +9,27 @@
  Microsoft docs are cooooooool#>
 
 #Replace this path with actual file location, will improve it later
+#First thing is to open the excel sheet
+#then use the save as function to save the files as .cvs
+
+$file = "C:\Downloads\288883.xls"
+
+#start Excel
+$ExcelFile = New-Object -ComObject Excel.Application
+#open file
+$workBook = $ExcelFile.WorkBooks.Open($file)
+#make it visible
+$ExcelFile.Visible=$false
+$workBook.SaveAs("C:\Downloads\288883.csv", 6) #Found this online Q: what does 6 do????
+$worksheet = $workBook.Worksheets.Item[10000]
+$workBook.close()
+
+#Use .csv files to do the following work
+
 #Where-Object is to find all violations that satisfy the following conditions
 #CNotMatch contains condictions aka all the violaions that can be ignored, 
 #there should be a more effective way to do it i guess? 
 #but right now I am just copying everything from the Violation Not Sent file in Google Drive
-
-
 
 $P = Import-Csv -Path "C:\Downloads\288883.csv" | Where-Object  {$_.Note -CNotMatch "This HEAD does not contain a title element" -and 
 $_.Note -CNotMatch "This LINK has an id attribute of 'font-awesome-5-kit-css', which is not unique" -and 
