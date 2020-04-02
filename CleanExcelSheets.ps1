@@ -20,7 +20,7 @@ $ExcelFile = New-Object -ComObject Excel.Application
 $workBook = $ExcelFile.WorkBooks.Open($file)
 #make it unvisible
 $ExcelFile.Visible=$false
-$workBook.SaveAs("C:\Downloads\288883.csv") 
+$workBook.SaveAs("C:\Downloads\288883.csv", 6)  #second number specifies what tyoe of file it is to save!!!
 
 #This is where I got stuck. I am trying to highlight all text with "This P..." 
 #but it looks like it's not going in to the loop
