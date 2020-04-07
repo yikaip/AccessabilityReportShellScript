@@ -45,7 +45,7 @@ function ConvertExcelToCSV {
 #This function is to delete all unnecessary template level errors
 function Delete () {
     $P = Import-Csv -Path ("C:\Downloads\" + $saveAsName + ".csv")-Delimiter "," | Where-Object  {
-        $_.Note -CNotMatch "This HEAD does not contain a title element" -and $_.Note -CNotMatch "This LINK has an id attribute of 'font-awesome-5-kit-css', which is not unique" -and $_.Note -CNotMatch "This INPUT has an id attribute of" -and $_.Note -CNotMatch "carouselSS"} | Export-Csv -Path ("C:\Downloads\" + $newName +".csv")
+        $_.Note -CNotMatch "This HEAD does not contain a title element" -and $_.Note -CNotMatch "This LINK has an id attribute of 'font-awesome-5-kit-css', which is not unique" -and $_.Note -CNotMatch "This INPUT has an id attribute of" -and $_.Note -CNotMatch "carouselSS" -and $_.Note -CNotMatch "slick-slide"} | Export-Csv -Path ("C:\Downloads\" + $newName +".csv")
 }
 
 #This function is to extract all violations that need a second-time review
