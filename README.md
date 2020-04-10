@@ -1,5 +1,5 @@
 # AccessabilityReportShellScript
-PowerShell script to clean up quarterly accessibility reports
+PowerShell script to clean up quarterly accessibility reports: filter out all violations that are not needed, repeating links and is user-friendly. 
 
 
 ## Team Member
