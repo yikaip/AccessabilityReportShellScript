@@ -45,13 +45,14 @@ function ConvertExcelToCSV {
 #This function is to delete all unnecessary template level errors
 function Delete () {
     $P = Import-Csv -Path ("C:\Downloads\" + $saveAsName + ".csv")-Delimiter "," | Where-Object  {
-        $_.Note -CNotMatch "This HEAD does not contain a title element" -and $_.Note -CNotMatch "This LINK has an id attribute of 'font-awesome-5-kit-css', which is not unique" -and $_.Note -CNotMatch "This INPUT has an id attribute of" -and $_.Note -CNotMatch "carouselSS" -and $_.Note -CNotMatch "slick-slide"} | Export-Csv -Path ("C:\Downloads\" + $newName +".csv")
+        $_.Note -CNotMatch "This HEAD does not contain a title element" -and $_.Note -CNotMatch "This LINK has an id attribute of 'font-awesome-5-kit-css', which is not unique" -and $_.Note -CNotMatch "This INPUT has an id attribute of" -and $_.Note -CNotMatch "carouselSS" -and $_.Note -CNotMatch "slick-slide" -and $_."Module Location" -CMatch "html"} | Export-Csv -Path ("C:\Downloads\" + $newName +".csv")
 }
 
 #This function is to extract all violations that need a second-time review
 function DoubleCheckViolations {
-    $P = Import-Csv -Path ("C:\Downloads\" + $saveAsName + ".csv") -Delimiter ","| Where-Object  {
-        $_.Note -Match "This P contains" -or $_.Note -Match "This H2"} | Export-Csv -Path ("C:\Downloads\" + $newName +".csv")
+    $filterName = Read-Host "This is the file that stores all violations that needs us to double check. Give it a name"
+    $P = Import-Csv -Path ("C:\Downloads\" + $saveAsName + ".csv") | Where-Object  {$_.Note -Match "This P contains" -or $_.Note -Match "This H2" -and $_."Module Location" -CMatch "html"} | Export-Csv -Path ("C:\Downloads\" + $filterName + ".csv")
+    $S = Import-Csv -Path ("C:\Downloads\" + $saveAsName + ".csv") | Where-Object {$_.Note -CNotMatch "This P contains" -and $_.Note -CNotMatch "This H2" -and $_."Module Location" -CMatch "html"} | Export-Csv -Path ("C:\Downloads\" + $newName + ".csv")
 }
 
 #This function is to convert the .csv file back to excel so it's easier to send out
@@ -76,6 +77,7 @@ if ($Ans -Match "Violation"){
 } 
 else{
     DoubleCheckViolations
+    Write-Host "Note: After checking those items, don't forget to copy and paste violations that are valid back to" $newName -ForegroundColor Red -BackgroundColor White
 }
 ConvertCSVToExcel
 Write-Host "---------------------------------------------------------------------------------------------------------"
