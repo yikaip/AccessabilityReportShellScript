@@ -63,6 +63,7 @@ function ConvertCSVToExcel {
     $worksheet = $wb.Sheets.Item(1)
     #delete the first row since it's contains info we dont need
     $worksheet.Cells.Item(1,1).EntireRow.Delete()
+    #change the column width of the sheet so it fits with all characters 
     $ws = $wb.Sheets.Item($newName)
     $ws.columns.item(1).columnWidth = 40
     $ws.columns.item(2).columnWidth = 50
