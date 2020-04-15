@@ -63,6 +63,11 @@ function ConvertCSVToExcel {
     $worksheet = $wb.Sheets.Item(1)
     #delete the first row since it's contains info we dont need
     $worksheet.Cells.Item(1,1).EntireRow.Delete()
+    $ws = $wb.Sheets.Item($newName)
+    $ws.columns.item(1).columnWidth = 40
+    $ws.columns.item(2).columnWidth = 50
+    $ws.columns.item(4).columnWidth = 70
+    $ws.columns.item(5).columnWidth = 100
     $wb.SaveAs("C:\Downloads\" + $newName + ".xlsx", 61)
     $wb.close()
     $Excel.Quit()
