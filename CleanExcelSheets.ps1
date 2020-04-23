@@ -63,6 +63,7 @@ function ConvertCSVToExcel {
     $worksheet = $wb.Sheets.Item(1)
     #delete the first row since it's contains info we dont need
     $worksheet.Cells.Item(1,1).EntireRow.Delete()
+    #change the column width of the sheet so it fits with all characters 
     $ws = $wb.Sheets.Item($newName)
     $ws.columns.item(1).columnWidth = 40
     $ws.columns.item(2).columnWidth = 50
@@ -72,10 +73,48 @@ function ConvertCSVToExcel {
     $wb.close()
     $Excel.Quit()
 }
+function CombineTwoSheets {
+    #import two excel files, 
+    #assuming names are Violation and Needs Review,
+    #then add Violation to Needs Review
+    #Note: The file should be ready to send now. Before sending out change the filename in directory to 2020Q1-SITENAME
+
+    $Excel = New-Object -ComObject Excel.Application
+    $Excel.visible = $false
+    $workbook1 = $Excel.WorkBooks.open("C:\Downloads\" + $tempName1)
+    $worksheet1 = $workbook1.WorkSheets.item("Violation")
+    $range1 = $worksheet1.Range("A1:E1").EntireColumn
+    $range1.Copy() | Out-Null
+    
+    $excel = New-Object -ComObject Excel.Application
+    $excel.visible = $false
+    $workbook2 = $excel.WorkBooks.open("C:\Downloads\" + $tempName2)
+    $worksheet2 = $workbook2.WorkSheets.Item("Needs Review")
+    $worksheet2 = $workbook2.WorkSheets.Add()
+    $worksheet2.Name = "Violations"
+    $range2 = $worksheet2.Range("A1:E1").EntireColumn
+    $worksheet2.Paste($range2)
+    $worksheet2.columns.item(1).columnWidth = 40
+    $worksheet2.columns.item(2).columnWidth = 50
+    $worksheet2.columns.item(4).columnWidth = 70
+    $worksheet2.columns.item(5).columnWidth = 100
+    
+    $workbook1.close()
+    $workbook2.close()
+    $Excel.Quit()
+    $excel.Quit()
+    
+    
+}
 
 #--------------MAIN-------------#
+#First convert excel sheets to csv files;
+#if it is a violation sheet, run delete function, else fun double check function;
+#convert csv files back to excel files;
+#if the there are two excel files, combine them together, else end this program.
+
 ConvertExcelToCSV
-#Have the user tells us what it should be. Note: Type in violation or v for "Violation Sheet" and anything else for "Needs Review Sheet"
+#Have the user tells us what it should be. Note: Type in violation for "Violation Sheet" and anything else for "Needs Review Sheet"
 $Ans = Read-Host "Violation/Needs Review"
 if ($Ans -Match "Violation"){
     Delete
@@ -85,4 +124,12 @@ else{
     Write-Host "Note: After checking those items, don't forget to copy and paste violations that are valid back to" $newName -ForegroundColor Red -BackgroundColor White
 }
 ConvertCSVToExcel
+#Have the user tells us if there are two files yet.
+$Run = Read-Host "Do you have both of the two sheets, Violation and Needs Review? If there is only one sheet, end here."
+if ($Run -Match "Yes" -or $Run -Match "Y"){
+    CombineTwoSheets
+}
+else{
+    exit
+}
 Write-Host "---------------------------------------------------------------------------------------------------------"
