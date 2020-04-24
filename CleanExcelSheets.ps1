@@ -13,14 +13,14 @@ Reference:
 Write-Host "---------------------------------------------------------------------------------------------------------"
 $originName = Read-Host "Please type in th filename, ex.288831"
 $saveAsName = Read-Host "We need to save this file as .csv just for now. Please type in the temporary name for this csv file"
-$newName = Read-Host "Okay, One more step. Please type in the actual name of this file, ex.2020Q1-ANISCI."
+$newName = Read-Host "Is this sheet Violation or Needs Review"
 Write-Host "---------------------------------------------------------------------------------------------------------"
 
 #This function is to convert the excel files to .csv
 #open the excel sheet
 #then use the save as function to save the files as .cvs
 function ConvertExcelToCSV {
-    $file = "C:\Downloads\" + $originName + ".xlsx"
+    $file = "C:\Users\USERNAME\Downloads\" + $originName + ".xls"
     #start Excel
     $ExcelFile = New-Object -ComObject Excel.Application
     #open file
@@ -29,7 +29,7 @@ function ConvertExcelToCSV {
     $ExcelFile.Visible=$false
     #SaveAs allows us to change the file extension and file type, 
     #second parameter (number) is IMPORTANT since it specifies what type of file it is to save
-    $workBook.SaveAs("C:\Downloads\" + $saveAsName + ".csv", 6) 
+    $workBook.SaveAs("C:\Users\USERNAME\Downloads\" + $saveAsName + ".csv", 6) 
     #Quit and close excel
     $workBook.close()
     $ExcelFile.Quit()
@@ -44,20 +44,21 @@ function ConvertExcelToCSV {
 
 #This function is to delete all unnecessary template level errors
 function Delete () {
-    $P = Import-Csv -Path ("C:\Downloads\" + $saveAsName + ".csv")-Delimiter "," | Where-Object  {
-        $_.Note -CNotMatch "This HEAD does not contain a title element" -and $_.Note -CNotMatch "This LINK has an id attribute of 'font-awesome-5-kit-css', which is not unique" -and $_.Note -CNotMatch "This INPUT has an id attribute of" -and $_.Note -CNotMatch "carouselSS" -and $_.Note -CNotMatch "slick-slide" -and $_."Module Location" -CMatch "html"} | Export-Csv -Path ("C:\Downloads\" + $newName +".csv")
+    $P = Import-Csv -Path ("
+    Downloads\" + $saveAsName + ".csv")-Delimiter "," | Where-Object  {
+        $_.Note -CNotMatch "This HEAD does not contain a title element" -and $_.Note -CNotMatch "This LINK has an id attribute of 'font-awesome-5-kit-css', which is not unique" -and $_.Note -CNotMatch "This INPUT has an id attribute of" -and $_.Note -CNotMatch "carouselSS" -and $_.Note -CNotMatch "slick-slide" -and $_."Module Location" -CMatch "html"} | Export-Csv -Path ("C:\Users\USERNAME\Downloads\" + $newName +".csv")
 }
 
 #This function is to extract all violations that need a second-time review
 function DoubleCheckViolations {
     $filterName = Read-Host "This is the file that stores all violations that needs us to double check. Give it a name"
-    $P = Import-Csv -Path ("C:\Downloads\" + $saveAsName + ".csv") | Where-Object  {$_.Note -Match "This P contains" -or $_.Note -Match "This H2" -and $_."Module Location" -CMatch "html"} | Export-Csv -Path ("C:\Downloads\" + $filterName + ".csv")
-    $S = Import-Csv -Path ("C:\Downloads\" + $saveAsName + ".csv") | Where-Object {$_.Note -CNotMatch "This P contains" -and $_.Note -CNotMatch "This H2" -and $_."Module Location" -CMatch "html"} | Export-Csv -Path ("C:\Downloads\" + $newName + ".csv")
+    $P = Import-Csv -Path ("C:\Users\USERNAME\Downloads\" + $saveAsName + ".csv") | Where-Object  {$_.Note -Match "This P contains" -or $_.Note -Match "This H2" -and $_."Module Location" -CMatch "html"} | Export-Csv -Path ("C:\Users\USERNAME\Downloads\" + $filterName + ".csv")
+    $S = Import-Csv -Path ("C:\Users\USERNAME\Downloads\" + $saveAsName + ".csv") | Where-Object {$_.Note -CNotMatch "This P contains" -and $_.Note -CNotMatch "This H2" -and $_."Module Location" -CMatch "html"} | Export-Csv -Path ("C:\Users\USERNAME\Downloads\" + $newName + ".csv")
 }
 
 #This function is to convert the .csv file back to excel so it's easier to send out
 function ConvertCSVToExcel {
-    $csvFile = "C:\Downloads\" + $newName + ".csv"
+    $csvFile = "C:\Users\USERNAME\Downloads\" + $newName + ".csv"
     $Excel = New-Object -ComObject Excel.Application
     $wb = $Excel.WorkBooks.Open($csvFile)
     $worksheet = $wb.Sheets.Item(1)
@@ -69,7 +70,7 @@ function ConvertCSVToExcel {
     $ws.columns.item(2).columnWidth = 50
     $ws.columns.item(4).columnWidth = 70
     $ws.columns.item(5).columnWidth = 100
-    $wb.SaveAs("C:\Downloads\" + $newName + ".xlsx", 61)
+    $wb.SaveAs("C:\Users\USERNAME\Downloads\" + $newName + ".xlsx", 61)
     $wb.close()
     $Excel.Quit()
 }
@@ -81,14 +82,14 @@ function CombineTwoSheets {
 
     $Excel = New-Object -ComObject Excel.Application
     $Excel.visible = $false
-    $workbook1 = $Excel.WorkBooks.open("C:\Downloads\" + $tempName1)
+    $workbook1 = $Excel.WorkBooks.open("C:\Users\USERNAME\Downloads\" + $tempName1)
     $worksheet1 = $workbook1.WorkSheets.item("Violation")
     $range1 = $worksheet1.Range("A1:E1").EntireColumn
     $range1.Copy() | Out-Null
     
     $excel = New-Object -ComObject Excel.Application
     $excel.visible = $false
-    $workbook2 = $excel.WorkBooks.open("C:\Downloads\" + $tempName2)
+    $workbook2 = $excel.WorkBooks.open("C:\Users\USERNAME\Downloads\" + $tempName2)
     $worksheet2 = $workbook2.WorkSheets.Item("Needs Review")
     $worksheet2 = $workbook2.WorkSheets.Add()
     $worksheet2.Name = "Violations"
