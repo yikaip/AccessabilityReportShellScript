@@ -14,6 +14,29 @@ Write-Host "--------------------------------------------------------------------
 $originName = Read-Host "Please type in th filename, ex.288831"
 $saveAsName = Read-Host "We need to save this file as .csv just for now. Please type in the temporary name for this csv file"
 $newName = Read-Host "Is this sheet Violation or Needs Review"
+if ($newName -Match "Violation" -or $newName -Match "Violations" -or $newName -Match "v"){
+    $newName = "Violations"
+    $tempName1 = $newName
+}
+elseif ($newName -Match "Needs Review" -or $newName -Match "Need Review" -or $newName -Match "n"){
+    $newName = "Needs Review"
+    $tempName2 = $newName
+}
+else {
+    while($newName -NotMatch "Violation" -or $newName -NotMatch "Violations" -or $newName -NotMatch"Needs Review" -or $newName -NotMatch "Need Review"){
+          $newName = Read-Host "That seems wrong, please check your spelling and only type in Violation or Needs Review"
+          if ($newName -Match "Violation" -or $newName -Match "Violations" -or $newName -Match "v"){
+              $newName = "Violations"
+              $tempName1 = $newName
+              break
+          }
+          elseif ($newName -Match "Needs Review" -or $newName -Match "Need Review" -or $newName -Match "n"){
+              $newName = "Needs Review"
+              $tempName2 = $newName
+              break
+          }
+    }
+}
 Write-Host "---------------------------------------------------------------------------------------------------------"
 
 #This function is to convert the excel files to .csv
@@ -73,6 +96,8 @@ function ConvertCSVToExcel {
     $wb.SaveAs("C:\Users\USERNAME\Downloads\" + $newName + ".xlsx", 61)
     $wb.close()
     $Excel.Quit()
+    Remove-Item -Path ("C:\Users\USERNAME\Downloads\" + $saveAsName + ".csv")
+    Remove-Item -Path ("C:\Users\USERNAME\Downloads\" + $newName + ".csv")
 }
 function CombineTwoSheets {
     #import two excel files, 
@@ -117,12 +142,26 @@ function CombineTwoSheets {
 ConvertExcelToCSV
 #Have the user tells us what it should be. Note: Type in violation for "Violation Sheet" and anything else for "Needs Review Sheet"
 $Ans = Read-Host "Violation/Needs Review"
-if ($Ans -Match "Violation"){
+iif ($Ans -Match "Violation" -or $Ans -Match "Violations" -or $Ans -Match "v"){
     Delete
-} 
-else{
+}
+elseif ($Ans -Match "Needs Review" -or $Ans -Match "Need Review" -or $Ans -Match "n"){
     DoubleCheckViolations
     Write-Host "Note: After checking those items, don't forget to copy and paste violations that are valid back to" $newName -ForegroundColor Red -BackgroundColor White
+}
+else {
+    while($Ans -NotMatch "Violation" -or $Ans -NotMatch "Violations" -or $Ans -NotMatch"Needs Review" -or $Ans -NotMatch "Need Review"){
+        $Ans = Read-Host "That seems wrong, please check your spelling and only type in Violation or Needs Review"
+        if ($Ans -Match "Violation" -or $Ans -Match "Violations"){
+            Delete
+            break
+        }
+        elseif ($Ans -Match "Needs Review" -or $Ans -Match "Need Review"){
+            DoubleCheckViolations
+            Write-Host "Note: After checking those items, don't forget to copy and paste violations that are valid back to" $newName -ForegroundColor Red -BackgroundColor White
+            break
+        }
+    }
 }
 ConvertCSVToExcel
 #Have the user tells us if there are two files yet.
